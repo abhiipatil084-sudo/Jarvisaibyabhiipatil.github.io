@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Jarvis AI by AP</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary-color: #00fff7;
+      --secondary-color: #00a8a5;
+      --bg-color: #0f0f0f;
+      --text-color: #ffffff;
+      --accent-color: #007c7a;
+      --error-color: #ff4444;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      background: #000;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: var(--text-color);
+      overflow-x: hidden;
+    }
+
+    .header {
+      text-align: center;
+      padding: 15px 20px;
+      color: var(--primary-color);
+      background: var(--bg-color);
+      box-shadow: 0 0 15px var(--primary-color);
+      position: relative;
+      z-index: 10;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 15px;
+    }
+
+    .logo {
+      font-size: 24px;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: transform 0.3s ease;
+    }
+
+    .logo:hover {
+      transform: scale(1.05);
+    }
+
+    .features {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .feature {
+      background: rgba(0, 255, 247, 0.1);
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      border: 1px solid var(--primary-color);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.3s ease;
+    }
+
+    .feature:hover {
+      background: rgba(0, 255, 247, 0.2);
+      transform: translateY(-2px);
+    }
+
+    .container {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      position: relative;
+    }
+
+    iframe {
+      width: 100%;
+      flex-grow: 1;
+      border: none;
+      display: block;
+      background: #000;
+      min-height: calc(100vh - 80px);
+    }
+
+    .footer {
+      text-align: center;
+      padding: 12px;
+      background: var(--bg-color);
+      color: var(--primary-color);
+      font-size: 12px;
+      border-top: 1px solid var(--accent-color);
+    }
+
+    /* Loading animation */
+    .loading-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.9);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 100;
+      flex-direction: column;
+      gap: 20px;
+      transition: opacity 0.5s ease;
+    }
+
+    .loader {
+      border: 5px solid var(--accent-color);
+      border-top: 5px solid var(--primary-color);
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .error-message {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: var(--bg-color);
+      padding: 20px;
+      border: 1px solid var(--error-color);
+      border-radius: 8px;
+      max-width: 80%;
+      text-align: center;
+      z-index: 101;
+    }
+
+    .reload-btn {
+      margin-top: 15px;
+      padding: 8px 16px;
+      background: var(--primary-color);
+      color: #000;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: background 0.3s;
+    }
+
+    .reload-btn:hover {
+      background: var(--secondary-color);
+    }
+
+    @media (max-width: 768px) {
+      .header {
+        padding: 12px 15px;
+        gap: 10px;
+      }
+
+      .logo {
+        font-size: 20px;
+      }
+
+      .features {
+        gap: 8px;
+      }
+
+      .feature {
+        font-size: 10px;
+        padding: 4px 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="logo">
+        <i class="fas fa-robot"></i>
+        <span>Jarvis AI Chatbot</span>
+      </div>
+      <div class="features">
+        <div class="feature">
+          <i class="fas fa-key"></i> No API Key
+        </div>
+        <div class="feature">
+          <i class="fas fa-microphone"></i> Voice Support
+        </div>
+        <div class="feature">
+          <i class="fas fa-bolt"></i> Fast Response
+        </div>
+      </div>
+    </div>
+
+    <iframe 
+      src="https://chatbot-ui.pages.dev" 
+      allow="clipboard-read; clipboard-write; microphone"
+      id="chatFrame"
+      title="Jarvis AI Chat Interface">
+    </iframe>
+
+    <div class="footer">
+      © 2025 Jarvis AI Chatbot | Free to use | No API Key Required <br>
+      Creator: <a href="tel:+919545002367" style="color:#00fff7; text-decoration: none;">+91-9545002367</a>
+    </div>
+  </div>
+
+  <div class="loading-container" id="loader">
+    <div class="loader"></div>
+    <div>Initializing Jarvis AI...</div>
+  </div>
+
+  <div class="error-message" id="errorMessage">
+    <h3><i class="fas fa-exclamation-triangle"></i> Connection Error</h3>
+    <p>Unable to load the chat interface. Please check your internet connection and try again.</p>
+    <button class="reload-btn" id="reloadBtn">
+      <i class="fas fa-sync-alt"></i> Reload
+    </button>
+  </div>
+
+  <script>
+    const loader = document.getElementById('loader');
+    const iframe = document.getElementById('chatFrame');
+    const errorMessage = document.getElementById('errorMessage');
+    const reloadBtn = document.getElementById('reloadBtn');
+    let hasError = false;
+
+    function handleLoad() {
+      if (!hasError) {
+        loader.style.opacity = '0';
+        setTimeout(() => {
+          loader.style.display = 'none';
+        }, 500);
+      }
+    }
+
+    function handleError() {
+      hasError = true;
+      loader.style.display = 'none';
+      errorMessage.style.display = 'block';
+    }
+
+    reloadBtn.addEventListener('click', () => {
+      hasError = false;
+      errorMessage.style.display = 'none';
+      loader.style.display = 'flex';
+      loader.style.opacity = '1';
+      iframe.src = iframe.src;
+    });
+
+    iframe.addEventListener('load', handleLoad);
+    iframe.addEventListener('error', handleError);
+
+    const loadTimeout = setTimeout(() => {
+      if (loader.style.display !== 'none') {
+        handleError();
+      }
+    }, 10000);
+
+    iframe.addEventListener('load', () => {
+      clearTimeout(loadTimeout);
+    });
+  </script>
+</body>
+</html>
