@@ -1,62 +1,721 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Jarvis by Abhii Patil</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jarvis AI Assistant</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
-    body {
+    * {
       margin: 0;
-      background: #0f0f0f;
-      font-family: 'Segoe UI', sans-serif;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    :root {
+      --primary: #1a73e8;
+      --secondary: #0f62fe;
+      --dark: #121212;
+      --light: #f8f9fa;
+      --accent: #00c853;
+      --danger: #ff5252;
+    }
+    
+    body {
+      background-color: #0a0a0a;
+      color: #e0e0e0;
+      line-height: 1.6;
+      background-image: radial-gradient(circle at 10% 20%, rgba(25, 25, 35, 0.8) 0%, rgba(10, 10, 15, 0.9) 90%);
+      min-height: 100vh;
+    }
+    
+    header {
+      background: rgba(15, 15, 25, 0.9);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(80, 80, 120, 0.3);
+    }
+    
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    
+    .logo-icon {
+      background: var(--primary);
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+    }
+    
+    .logo-text {
+      font-size: 1.8rem;
+      font-weight: 700;
+      background: linear-gradient(to right, var(--primary), #00c6ff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    
+    nav ul {
+      display: flex;
+      list-style: none;
+      gap: 20px;
+    }
+    
+    nav a {
+      color: #b0b0d0;
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 1.1rem;
+      transition: all 0.3s ease;
+      padding: 8px 15px;
+      border-radius: 6px;
+    }
+    
+    nav a:hover, nav a.active {
+      background: rgba(80, 100, 200, 0.2);
       color: white;
     }
-    header {
-      padding: 1rem;
-      text-align: center;
-      background: #1f1f1f;
-      font-size: 1.5rem;
-      font-weight: bold;
+    
+    .container {
+      max-width: 1200px;
+      margin: 2rem auto;
+      padding: 0 20px;
+      display: grid;
+      grid-template-columns: 1fr 350px;
+      gap: 25px;
     }
-    nav {
+    
+    .main-content {
+      background: rgba(20, 20, 30, 0.7);
+      border-radius: 15px;
+      padding: 25px;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(80, 80, 120, 0.3);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    }
+    
+    .card {
+      background: rgba(30, 30, 45, 0.6);
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 25px;
+      border: 1px solid rgba(80, 100, 200, 0.2);
+    }
+    
+    .card h2 {
+      font-size: 1.8rem;
+      margin-bottom: 15px;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .card h2 i {
+      background: rgba(80, 100, 200, 0.2);
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .card p {
+      color: #c0c0e0;
+      margin-bottom: 15px;
+    }
+    
+    .features {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      margin-top: 20px;
+    }
+    
+    .feature {
+      background: rgba(40, 40, 60, 0.5);
+      padding: 20px;
+      border-radius: 10px;
+      transition: transform 0.3s ease;
+      border: 1px solid rgba(80, 100, 200, 0.2);
+    }
+    
+    .feature:hover {
+      transform: translateY(-5px);
+      background: rgba(50, 50, 80, 0.6);
+    }
+    
+    .feature h3 {
+      color: var(--accent);
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .sidebar {
+      background: rgba(20, 20, 30, 0.7);
+      border-radius: 15px;
+      padding: 25px;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(80, 80, 120, 0.3);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      display: flex;
+      flex-direction: column;
+      gap: 25px;
+    }
+    
+    .calculator {
+      background: rgba(30, 30, 45, 0.6);
+      border-radius: 12px;
+      padding: 20px;
+      border: 1px solid rgba(80, 100, 200, 0.2);
+    }
+    
+    .calculator h3 {
+      color: var(--accent);
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    #calc-expr {
+      width: 100%;
+      padding: 12px;
+      background: rgba(10, 10, 20, 0.5);
+      border: 1px solid rgba(80, 100, 200, 0.3);
+      border-radius: 8px;
+      color: white;
+      font-size: 1.1rem;
+      margin-bottom: 10px;
+    }
+    
+    #calc-expr:focus {
+      outline: none;
+      border-color: var(--primary);
+    }
+    
+    .calc-btn {
+      width: 100%;
+      padding: 12px;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    
+    .calc-btn:hover {
+      background: #0d62d9;
+    }
+    
+    #calc-result {
+      margin-top: 15px;
+      padding: 12px;
+      background: rgba(10, 20, 40, 0.5);
+      border-radius: 8px;
+      text-align: center;
+      font-size: 1.2rem;
+      min-height: 20px;
+      border: 1px solid rgba(80, 100, 200, 0.2);
+    }
+    
+    .info-cards {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    
+    .info-card {
+      background: rgba(30, 30, 45, 0.6);
+      border-radius: 12px;
+      padding: 20px;
+      border: 1px solid rgba(80, 100, 200, 0.2);
+    }
+    
+    .info-card h3 {
+      color: var(--accent);
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .info-card ul {
+      list-style: none;
+      padding-left: 10px;
+    }
+    
+    .info-card li {
+      margin-bottom: 10px;
+      padding-left: 25px;
+      position: relative;
+      color: #c0c0e0;
+    }
+    
+    .info-card li:before {
+      content: "•";
+      color: var(--primary);
+      position: absolute;
+      left: 0;
+      font-size: 1.4rem;
+    }
+    
+    .chat-container {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      z-index: 1000;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 15px;
+    }
+    
+    .chat-toggle {
+      background: var(--primary);
+      color: white;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.8rem;
+      cursor: pointer;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+      transition: all 0.3s ease;
+    }
+    
+    .chat-toggle:hover {
+      transform: scale(1.05);
+      background: #0d62d9;
+    }
+    
+    .chat-box {
+      width: 350px;
+      height: 450px;
+      background: rgba(25, 25, 40, 0.95);
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      transform: scale(0);
+      transform-origin: bottom right;
+      transition: transform 0.3s ease;
+      border: 1px solid rgba(80, 100, 200, 0.3);
+      backdrop-filter: blur(10px);
+    }
+    
+    .chat-box.active {
+      transform: scale(1);
+    }
+    
+    .chat-header {
+      background: rgba(15, 15, 30, 0.9);
+      color: white;
+      padding: 15px 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border-bottom: 1px solid rgba(80, 100, 200, 0.3);
+    }
+    
+    .chat-header h3 {
+      font-size: 1.3rem;
+    }
+    
+    .chat-messages {
+      flex: 1;
+      padding: 15px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+    
+    .message {
+      max-width: 80%;
+      padding: 12px 15px;
+      border-radius: 12px;
+      font-size: 1rem;
+      line-height: 1.5;
+      animation: fadeIn 0.3s ease;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .bot-message {
+      background: rgba(40, 40, 70, 0.8);
+      align-self: flex-start;
+      border-bottom-left-radius: 3px;
+      color: #e0e0ff;
+    }
+    
+    .user-message {
+      background: var(--primary);
+      color: white;
+      align-self: flex-end;
+      border-bottom-right-radius: 3px;
+    }
+    
+    .chat-input {
+      display: flex;
+      padding: 15px;
+      background: rgba(15, 15, 30, 0.9);
+      border-top: 1px solid rgba(80, 100, 200, 0.3);
+    }
+    
+    .chat-input input {
+      flex: 1;
+      padding: 12px 15px;
+      background: rgba(10, 10, 20, 0.7);
+      border: 1px solid rgba(80, 100, 200, 0.3);
+      border-radius: 25px;
+      color: white;
+      font-size: 1rem;
+      outline: none;
+    }
+    
+    .chat-input button {
+      background: var(--primary);
+      color: white;
+      border: none;
+      width: 45px;
+      height: 45px;
+      border-radius: 50%;
+      margin-left: 10px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    
+    .chat-input button:hover {
+      background: #0d62d9;
+    }
+    
+    footer {
+      background: rgba(15, 15, 25, 0.9);
+      text-align: center;
+      padding: 2rem;
+      margin-top: 3rem;
+      border-top: 1px solid rgba(80, 80, 120, 0.3);
+      backdrop-filter: blur(10px);
+    }
+    
+    .social-links {
       display: flex;
       justify-content: center;
-      gap: 2rem;
-      background: #222;
-      padding: 0.5rem;
+      gap: 20px;
+      margin: 20px 0;
     }
-    nav a {
-      color: white;
-      text-decoration: none;
+    
+    .social-links a {
+      color: #b0b0d0;
+      font-size: 1.5rem;
+      transition: color 0.3s;
     }
-    .content {
-      padding: 2rem;
-      max-width: 900px;
-      margin: auto;
+    
+    .social-links a:hover {
+      color: var(--primary);
     }
-    footer {
-      background: #1f1f1f;
-      text-align: center;
-      padding: 1rem;
-      font-size: 0.9rem;
-      margin-top: 3rem;
+    
+    @media (max-width: 900px) {
+      .container {
+        grid-template-columns: 1fr;
+      }
+      
+      .chat-box {
+        width: 300px;
+        height: 400px;
+      }
     }
   </style>
 </head>
 <body>
-  <header>Jarvis by Abhii Patil</header>
-  <nav>
-    <a href="index.html">Home</a>
-    <a href="chat.html">Chat</a>
-    <a href="india.html">India</a>
-    <a href="shivaji.html">Shivaji</a>
-    <a href="calculator.html">Calculator</a>
-  </nav>
-  <div class="content">
-    <h2>Welcome to Jarvis AI</h2>
-    <p>This is an offline smart assistant developed by Abhii Patil. It includes India info, Shivaji Maharaj facts, JEE data, and math solving abilities.</p>
-    <p>Instagram: <a href="https://instagram.com/paatillll_002" target="_blank">@paatillll_002</a></p>
+  <!-- Header -->
+  <header>
+    <div class="logo">
+      <div class="logo-icon">
+        <i class="fas fa-robot"></i>
+      </div>
+      <div class="logo-text">Jarvis AI</div>
+    </div>
+    <nav>
+      <ul>
+        <li><a href="#" class="active">Home</a></li>
+        <li><a href="#">Features</a></li>
+        <li><a href="#">About</a></li>
+        <li><a href="#">Contact</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- Main Content -->
+  <div class="container">
+    <div class="main-content">
+      <div class="card">
+        <h2><i class="fas fa-star"></i> Welcome to Jarvis AI</h2>
+        <p>Your personal offline AI assistant created by Abhii Patil. Jarvis combines artificial intelligence with useful tools to help you with information, calculations, and more - all without needing an internet connection.</p>
+        <p>This intelligent assistant can answer questions about India, Shivaji Maharaj, JEE exam patterns, and perform mathematical calculations.</p>
+      </div>
+      
+      <div class="card">
+        <h2><i class="fas fa-bolt"></i> Key Features</h2>
+        <div class="features">
+          <div class="feature">
+            <h3><i class="fas fa-comments"></i> AI Chat Assistant</h3>
+            <p>Ask questions and get intelligent responses on various topics including history, education, and general knowledge.</p>
+          </div>
+          <div class="feature">
+            <h3><i class="fas fa-calculator"></i> Smart Calculator</h3>
+            <p>Perform complex mathematical calculations directly in your browser with our advanced calculator.</p>
+          </div>
+          <div class="feature">
+            <h3><i class="fas fa-book"></i> Knowledge Base</h3>
+            <p>Access information about India and the great Maratha leader Shivaji Maharaj at your fingertips.</p>
+          </div>
+          <div class="feature">
+            <h3><i class="fas fa-graduation-cap"></i> JEE Exam Info</h3>
+            <p>Get details about JEE Main and Advanced exam patterns, preparation tips, and more.</p>
+          </div>
+        </div>
+      </div>
+      
+      <div class="card">
+        <h2><i class="fas fa-info-circle"></i> About Jarvis</h2>
+        <p>Jarvis is an offline AI assistant developed by Abhii Patil as a personal project. It demonstrates how artificial intelligence can be implemented directly in the browser without requiring server connections or complex APIs.</p>
+        <p>The AI uses a knowledge database combined with natural language processing to understand and respond to user queries. All processing happens locally in your browser, ensuring privacy and speed.</p>
+      </div>
+    </div>
+    
+    <div class="sidebar">
+      <div class="calculator">
+        <h3><i class="fas fa-calculator"></i> Calculator</h3>
+        <input type="text" id="calc-expr" placeholder="Enter expression (e.g., 2+3*5)">
+        <button class="calc-btn" onclick="calculate()">Calculate</button>
+        <div id="calc-result"></div>
+      </div>
+      
+      <div class="info-cards">
+        <div class="info-card">
+          <h3><i class="fas fa-flag"></i> India Facts</h3>
+          <ul>
+            <li>Capital: New Delhi</li>
+            <li>Currency: Indian Rupee</li>
+            <li>Languages: Hindi, English</li>
+            <li>Largest State: Rajasthan</li>
+            <li>Prime Minister: Narendra Modi</li>
+          </ul>
+        </div>
+        
+        <div class="info-card">
+          <h3><i class="fas fa-crown"></i> Shivaji Maharaj</h3>
+          <ul>
+            <li>Born: 1630</li>
+            <li>Founder of the Maratha Empire</li>
+            <li>Master of guerrilla warfare</li>
+            <li>Built a strong naval force</li>
+            <li>Coronated in 1674</li>
+          </ul>
+        </div>
+      </div>
+    </div>
   </div>
-  <footer>Made with ❤️ by Abhii Patil</footer>
+  
+  <!-- Chat Interface -->
+  <div class="chat-container">
+    <div class="chat-toggle" id="chatToggle">
+      <i class="fas fa-comment-dots"></i>
+    </div>
+    
+    <div class="chat-box" id="chatBox">
+      <div class="chat-header">
+        <i class="fas fa-robot"></i>
+        <h3>Jarvis Assistant</h3>
+      </div>
+      
+      <div class="chat-messages" id="chatMessages">
+        <div class="message bot-message">
+          Hello! I'm Jarvis, your AI assistant. How can I help you today?
+        </div>
+        <div class="message bot-message">
+          You can ask me about:
+          <ul>
+            <li>India facts</li>
+            <li>Shivaji Maharaj</li>
+            <li>JEE exam pattern</li>
+            <li>Mathematical calculations</li>
+          </ul>
+        </div>
+      </div>
+      
+      <div class="chat-input">
+        <input type="text" id="userInput" placeholder="Ask something...">
+        <button id="sendButton"><i class="fas fa-paper-plane"></i></button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Footer -->
+  <footer>
+    <h3>Jarvis AI Assistant</h3>
+    <p>An offline AI project by Abhii Patil</p>
+    
+    <div class="social-links">
+      <a href="https://instagram.com/paatillll_002" target="_blank"><i class="fab fa-instagram"></i></a>
+      <a href="#"><i class="fab fa-github"></i></a>
+      <a href="#"><i class="fab fa-linkedin"></i></a>
+      <a href="#"><i class="fab fa-twitter"></i></a>
+    </div>
+    
+    <p>&copy; 2023 Jarvis AI. All rights reserved.</p>
+  </footer>
+
+  <script>
+    // Chatbot functionality
+    const chatToggle = document.getElementById('chatToggle');
+    const chatBox = document.getElementById('chatBox');
+    const chatMessages = document.getElementById('chatMessages');
+    const userInput = document.getElementById('userInput');
+    const sendButton = document.getElementById('sendButton');
+    
+    // Knowledge base for the AI
+    const jarvisData = {
+      "hi": "Hello! How can I assist you today?",
+      "hello": "Hi there! What can I do for you?",
+      "what is your name": "I'm Jarvis, your personal AI assistant.",
+      "who created you": "I was created by Abhii Patil as an offline AI project.",
+      "what can you do": "I can answer questions, perform calculations, and provide information on various topics. Try asking about India, Shivaji Maharaj, or JEE exams!",
+      "what is the capital of india": "The capital of India is New Delhi.",
+      "who was shivaji maharaj": "Shivaji Maharaj was the founder of the Maratha Empire, born in 1630. He established a competent and progressive civil rule and was known for his innovative military tactics.",
+      "jee exam pattern": "JEE Main has multiple-choice questions in Physics, Chemistry, and Math. JEE Advanced is for IIT aspirants and includes different question types including numerical value questions.",
+      "calculate": "You can use the calculator on this page to solve mathematical expressions.",
+      "thank you": "You're welcome! Is there anything else I can help with?",
+      "bye": "Goodbye! Feel free to chat again whenever you need assistance."
+    };
+    
+    // Toggle chatbot visibility
+    chatToggle.addEventListener('click', () => {
+      chatBox.classList.toggle('active');
+    });
+    
+    // Send message function
+    function sendMessage() {
+      const message = userInput.value.trim();
+      if (message === '') return;
+      
+      // Add user message
+      addMessage(message, 'user');
+      userInput.value = '';
+      
+      // Generate bot response after a short delay
+      setTimeout(() => {
+        const botResponse = getResponse(message);
+        addMessage(botResponse, 'bot');
+      }, 500);
+    }
+    
+    // Add message to chat
+    function addMessage(text, sender) {
+      const messageElement = document.createElement('div');
+      messageElement.classList.add('message');
+      messageElement.classList.add(sender + '-message');
+      messageElement.textContent = text;
+      
+      chatMessages.appendChild(messageElement);
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+    
+    // Generate bot response
+    function getResponse(input) {
+      const lowerMsg = input.toLowerCase();
+      
+      // Check knowledge base
+      for (let key in jarvisData) {
+        if (lowerMsg.includes(key)) {
+          return jarvisData[key];
+        }
+      }
+      
+      // Math calculations
+      if (lowerMsg.includes('calculate') || lowerMsg.includes('math') || 
+          lowerMsg.match(/[\d\+\-\*\/\(\)\.]/)) {
+        return "Please use the calculator on this page for mathematical expressions.";
+      }
+      
+      // Default responses
+      if (lowerMsg.includes('india')) {
+        return "India is a country in South Asia. Capital: New Delhi, Currency: Indian Rupee, Languages: Hindi, English.";
+      }
+      
+      if (lowerMsg.includes('shivaji')) {
+        return "Chhatrapati Shivaji Maharaj (1630-1680) was the founder of the Maratha Empire in western India. He is remembered for establishing an efficient administration and innovative military tactics.";
+      }
+      
+      if (lowerMsg.includes('jee') || lowerMsg.includes('exam')) {
+        return "JEE (Joint Entrance Examination) is an engineering entrance assessment for admission to engineering colleges in India. It consists of JEE Main and JEE Advanced.";
+      }
+      
+      return "I'm still learning. Could you ask something about India, Shivaji Maharaj, JEE exams, or use the calculator?";
+    }
+    
+    // Calculator function
+    function calculate() {
+      const exprInput = document.getElementById('calc-expr');
+      const resultDiv = document.getElementById('calc-result');
+      const expr = exprInput.value.trim();
+      
+      if (!expr) {
+        resultDiv.textContent = "Please enter an expression";
+        return;
+      }
+      
+      try {
+        // Security note: Using eval can be dangerous in production
+        // This is acceptable for a local/offline project
+        const result = eval(expr);
+        resultDiv.textContent = `Result: ${result}`;
+      } catch (e) {
+        resultDiv.textContent = "Error: Invalid expression";
+      }
+    }
+    
+    // Event listeners
+    sendButton.addEventListener('click', sendMessage);
+    userInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        sendMessage();
+      }
+    });
+    
+    // Allow Enter key in calculator
+    document.getElementById('calc-expr').addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        calculate();
+      }
+    });
+  </script>
 </body>
 </html>
