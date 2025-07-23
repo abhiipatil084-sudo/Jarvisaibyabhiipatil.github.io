@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Chat with Jarvis</title>
+  <style>
+    body {
+      background: #121212;
+      color: #f1f1f1;
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      margin: 0;
+    }
+    .chatbox {
+      flex-grow: 1;
+      padding: 1rem;
+      overflow-y: auto;
+    }
+    .input-area {
+      display: flex;
+      padding: 1rem;
+      background: #1f1f1f;
+    }
+    .input-area input {
+      flex: 1;
+      padding: 0.5rem;
+      font-size: 1rem;
+    }
+    .input-area button {
+      padding: 0.5rem 1rem;
+      background: #0b84ff;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    .bubble {
+      padding: 0.7rem 1rem;
+      margin-bottom: 1rem;
+      border-radius: 12px;
+      max-width: 80%;
+    }
+    .user { background: #0b84ff; align-self: flex-end; }
+    .bot { background: #333; align-self: flex-start; }
+  </style>
+</head>
+<body>
+  <div class="chatbox" id="chatbox"></div>
+  <div class="input-area">
+    <input type="text" id="userInput" placeholder="Ask something...">
+    <button onclick="sendMessage()">Send</button>
+  </div>
+  <script src="data.js"></script>
+  <script>
+    function sendMessage() {
+      const input = document.getElementById('userInput');
+      const chatbox = document.getElementById('chatbox');
+      const userText = input.value.trim();
+      if (!userText) return;
+
+      const userDiv = document.createElement('div');
+      userDiv.className = 'bubble user';
+      userDiv.textContent = userText;
+      chatbox.appendChild(userDiv);
+
+      const response = getResponse(userText.toLowerCase());
+      const botDiv = document.createElement('div');
+      botDiv.className = 'bubble bot';
+      botDiv.textContent = response;
+      chatbox.appendChild(botDiv);
+
+      input.value = '';
+      chatbox.scrollTop = chatbox.scrollHeight;
+    }
+  </script>
+</body>
+</html>
