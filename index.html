@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jarvis Terminal - Offline AI</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Consolas', 'Courier New', monospace;
+    }
+    
+    body {
+      background: linear-gradient(135deg, #0a0e14, #0f1923);
+      color: #00FF41;
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+    
+    .matrix-bg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      opacity: 0.15;
+    }
+    
+    .header {
+      padding: 20px;
+      text-align: center;
+      border-bottom: 2px solid #00FF41;
+      box-shadow: 0 0 20px rgba(0, 255, 65, 0.3);
+      background: rgba(10, 15, 20, 0.9);
+      position: relative;
+    }
+    
+    .title {
+      font-size: 2.5rem;
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      margin-bottom: 5px;
+      text-shadow: 0 0 10px rgba(0, 255, 65, 0.7);
+    }
+    
+    .subtitle {
+      color: #00ff99;
+      font-size: 1.1rem;
+    }
+    
+    .container {
+      display: flex;
+      flex: 1;
+      padding: 20px;
+      gap: 20px;
+      max-width: 1600px;
+      margin: 0 auto;
+      width: 100%;
+    }
+    
+    .sidebar {
+      width: 300px;
+      background: rgba(5, 10, 15, 0.8);
+      border: 2px solid #00FF41;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 0 30px rgba(0, 255, 65, 0.2);
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .sidebar h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #00ff99;
+      border-bottom: 1px solid #00FF41;
+      padding-bottom: 10px;
+    }
+    
+    .capabilities {
+      flex: 1;
+    }
+    
+    .cap-item {
+      padding: 12px;
+      margin-bottom: 10px;
+      background: rgba(0, 20, 10, 0.5);
+      border-left: 3px solid #00FF41;
+      border-radius: 0 5px 5px 0;
+      transition: all 0.3s ease;
+    }
+    
+    .cap-item:hover {
+      background: rgba(0, 40, 20, 0.7);
+      transform: translateX(5px);
+    }
+    
+    .cap-item i {
+      margin-right: 10px;
+      color: #00ff99;
+    }
+    
+    .stats {
+      background: rgba(10, 25, 20, 0.6);
+      padding: 15px;
+      border-radius: 8px;
+      margin-top: 20px;
+      border: 1px solid rgba(0, 255, 65, 0.4);
+    }
+    
+    .stat-item {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+    
+    .terminal-container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      background: rgba(5, 10, 15, 0.8);
+      border: 2px solid #00FF41;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 0 30px rgba(0, 255, 65, 0.3);
+    }
+    
+    .terminal-header {
+      background: rgba(0, 30, 15, 0.9);
+      padding: 15px;
+      display: flex;
+      align-items: center;
+      border-bottom: 2px solid #00FF41;
+    }
+    
+    .controls {
+      display: flex;
+      gap: 10px;
+    }
+    
+    .control-btn {
+      width: 15px;
+      height: 15px;
+      border-radius: 50%;
+    }
+    
+    .close { background: #ff5f56; }
+    .minimize { background: #ffbd2e; }
+    .maximize { background: #27c93f; }
+    
+    .terminal-title {
+      flex: 1;
+      text-align: center;
+      font-weight: bold;
+      letter-spacing: 1px;
+    }
+    
+    .terminal {
+      flex: 1;
+      padding: 20px;
+      overflow-y: auto;
+      height: 0;
+      background: linear-gradient(180deg, #001100 0%, #000000 100%);
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .terminal-content {
+      flex: 1;
+    }
+    
+    .line {
+      margin: 15px 0;
+      line-height: 1.5;
+      opacity: 0;
+      animation: fadeIn 0.5s forwards;
+    }
+    
+    @keyframes fadeIn {
+      to { opacity: 1; }
+    }
+    
+    .line.user {
+      color: #0f0;
+    }
+    
+    .line.bot {
+      color: #0ff;
+    }
+    
+    .line.system {
+      color: #ffaa00;
+      font-style: italic;
+    }
+    
+    .prompt-container {
+      display: flex;
+      background: rgba(0, 20, 10, 0.7);
+      border-top: 2px solid #00FF41;
+      padding: 15px;
+    }
+    
+    .prompt-prefix {
+      padding: 10px 15px;
+      background: rgba(0, 40, 20, 0.8);
+      border-radius: 5px 0 0 5px;
+      color: #00ff99;
+    }
+    
+    .prompt-input-container {
+      flex: 1;
+      display: flex;
+    }
+    
+    input {
+      flex: 1;
+      background: rgba(0, 15, 10, 0.8);
+      border: none;
+      color: #00FF41;
+      font-size: 16px;
+      padding: 10px 15px;
+      outline: none;
+      border-top: 1px solid #00FF41;
+      border-bottom: 1px solid #00FF41;
+    }
+    
+    button {
+      background: linear-gradient(135deg, #00a040, #00FF41);
+      color: #000;
+      border: none;
+      padding: 10px 20px;
+      font-weight: bold;
+      cursor: pointer;
+      border-radius: 0 5px 5px 0;
+      transition: all 0.3s ease;
+    }
+    
+    button:hover {
+      background: linear-gradient(135deg, #00FF41, #00ff99);
+      box-shadow: 0 0 15px rgba(0, 255, 65, 0.5);
+    }
+    
+    .footer {
+      text-align: center;
+      color: #00ff99;
+      padding: 15px;
+      background: rgba(10, 15, 20, 0.9);
+      border-top: 2px solid #00FF41;
+      font-size: 14px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 20px;
+    }
+    
+    .social-links {
+      display: flex;
+      gap: 15px;
+    }
+    
+    .social-links a {
+      color: #00ff99;
+      font-size: 1.2rem;
+      transition: all 0.3s ease;
+    }
+    
+    .social-links a:hover {
+      color: #00FF41;
+      transform: translateY(-3px);
+    }
+    
+    .typing-indicator {
+      display: flex;
+      align-items: center;
+      color: #0ff;
+      margin-top: 10px;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    
+    .typing-indicator.visible {
+      opacity: 1;
+    }
+    
+    .typing-dots {
+      display: flex;
+      margin-left: 10px;
+    }
+    
+    .typing-dot {
+      width: 8px;
+      height: 8px;
+      background: #0ff;
+      border-radius: 50%;
+      margin: 0 3px;
+      animation: typing 1.4s infinite;
+    }
+    
+    .typing-dot:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+    
+    .typing-dot:nth-child(3) {
+      animation-delay: 0.4s;
+    }
+    
+    @keyframes typing {
+      0%, 60%, 100% { transform: translateY(0); }
+      30% { transform: translateY(-5px); }
+    }
+    
+    .help-command {
+      color: #ffaa00;
+      cursor: pointer;
+      text-decoration: underline;
+    }
+    
+    /* Matrix effect */
+    .matrix-column {
+      position: absolute;
+      top: 0;
+      width: 20px;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    
+    .matrix-char {
+      color: rgba(0, 255, 65, 0.3);
+      font-size: 18px;
+      opacity: 0;
+      animation: matrix-fall 10s linear infinite;
+    }
+    
+    @keyframes matrix-fall {
+      0% { transform: translateY(-100px); opacity: 0; }
+      5% { opacity: 1; }
+      95% { opacity: 1; }
+      100% { transform: translateY(100vh); opacity: 0; }
+    }
+    
+    /* Responsive design */
+    @media (max-width: 900px) {
+      .container {
+        flex-direction: column;
+        padding: 10px;
+      }
+      
+      .sidebar {
+        width: 100%;
+        margin-bottom: 20px;
+      }
+      
+      .title {
+        font-size: 1.8rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="matrix-bg" id="matrix-bg"></div>
+  
+  <div class="header">
+    <h1 class="title">J.A.R.V.I.S. TERMINAL</h1>
+    <p class="subtitle">Offline AI Assistant System v2.0</p>
+  </div>
+  
+  <div class="container">
+    <div class="sidebar">
+      <h2><i class="fas fa-microchip"></i> SYSTEM CAPABILITIES</h2>
+      <div class="capabilities">
+        <div class="cap-item">
+          <i class="fas fa-brain"></i> Natural Language Processing
+        </div>
+        <div class="cap-item">
+          <i class="fas fa-database"></i> Local Knowledge Database
+        </div>
+        <div class="cap-item">
+          <i class="fas fa-calculator"></i> Mathematical Calculations
+        </div>
+        <div class="cap-item">
+          <i class="fas fa-history"></i> Historical Data Analysis
+        </div>
+        <div class="cap-item">
+          <i class="fas fa-book"></i> Educational Assistance
+        </div>
+        <div class="cap-item">
+          <i class="fas fa-code"></i> Programming Support
+        </div>
+        <div class="cap-item">
+          <i class="fas fa-clock"></i> Time and Date Functions
+        </div>
+        <div class="cap-item">
+          <i class="fas fa-robot"></i> AI Conversation
+        </div>
+      </div>
+      
+      <div class="stats">
+        <h3><i class="fas fa-chart-bar"></i> SYSTEM STATS</h3>
+        <div class="stat-item">
+          <span>Knowledge Base:</span>
+          <span>1,200+ entries</span>
+        </div>
+        <div class="stat-item">
+          <span>Response Time:</span>
+          <span>&lt; 0.1s</span>
+        </div>
+        <div class="stat-item">
+          <span>System Uptime:</span>
+          <span>100%</span>
+        </div>
+        <div class="stat-item">
+          <span>Memory Usage:</span>
+          <span>12.7 MB</span>
+        </div>
+        <div class="stat-item">
+          <span>Version:</span>
+          <span>2.0.5</span>
+        </div>
+      </div>
+    </div>
+    
+    <div class="terminal-container">
+      <div class="terminal-header">
+        <div class="controls">
+          <div class="control-btn close"></div>
+          <div class="control-btn minimize"></div>
+          <div class="control-btn maximize"></div>
+        </div>
+        <div class="terminal-title">JARVIS TERMINAL - ACTIVE</div>
+      </div>
+      
+      <div class="terminal" id="terminal">
+        <div class="terminal-content">
+          <div class="line bot">[JARVIS]: Initializing systems... Online and ready.</div>
+          <div class="line bot">[JARVIS]: Welcome to Jarvis Terminal v2.0. I'm your offline AI assistant.</div>
+          <div class="line bot">[JARVIS]: Current time: <span id="current-time"></span></div>
+          <div class="line bot">[JARVIS]: Type <span class="help-command" onclick="showHelp()">'help'</span> for available commands or ask me anything.</div>
+          <div class="line system">[SYSTEM]: Security protocols enabled. Connection encrypted.</div>
+        </div>
+        
+        <div class="typing-indicator" id="typingIndicator">
+          [JARVIS]: Processing
+          <div class="typing-dots">
+            <div class="typing-dot"></div>
+            <div class="typing-dot"></div>
+            <div class="typing-dot"></div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="prompt-container">
+        <div class="prompt-prefix">user@jarvis:~$</div>
+        <div class="prompt-input-container">
+          <input type="text" id="userInput" placeholder="Enter command or question..." autofocus onkeydown="if(event.key==='Enter')handleInput()"/>
+          <button onclick="handleInput()"><i class="fas fa-paper-plane"></i> SEND</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="footer">
+    <div class="copyright">Created by Abhii Patil • © 2025 Jarvis Systems</div>
+    <div class="social-links">
+      <a href="#" title="Instagram"><i class="fab fa-instagram"></i></a>
+      <a href="#" title="GitHub"><i class="fab fa-github"></i></a>
+      <a href="#" title="LinkedIn"><i class="fab fa-linkedin"></i></a>
+      <a href="#" title="Twitter"><i class="fab fa-twitter"></i></a>
+    </div>
+  </div>
+
+  <script>
+    // Matrix background effect
+    function createMatrixEffect() {
+      const container = document.getElementById('matrix-bg');
+      const chars = '01';
+      const cols = Math.floor(window.innerWidth / 20);
+      
+      for (let i = 0; i < cols; i++) {
+        const col = document.createElement('div');
+        col.className = 'matrix-column';
+        col.style.left = `${i * 20}px`;
+        
+        // Random delay for each column
+        col.style.animationDelay = `${Math.random() * 5}s`;
+        
+        // Create characters in the column
+        const charCount = 30;
+        for (let j = 0; j < charCount; j++) {
+          const char = document.createElement('div');
+          char.className = 'matrix-char';
+          char.textContent = chars.charAt(Math.floor(Math.random() * chars.length));
+          char.style.animationDelay = `${Math.random() * 5}s`;
+          col.appendChild(char);
+        }
+        
+        container.appendChild(col);
+      }
+    }
+    
+    // Update time display
+    function updateTime() {
+      const now = new Date();
+      const timeString = now.toLocaleTimeString();
+      document.getElementById('current-time').textContent = timeString;
+    }
+    
+    // Knowledge base
+    const kb = {
+      "help": "Available commands: 'time', 'date', 'clear', 'who made you', 'about', 'capabilities', 'what is ai', 'who is shivaji', 'capital of india', 'prime minister', 'what is jee', 'instagram', 'hello', 'how are you', 'tell me about india', 'what is the largest planet'",
+      "hello": "Hello! I'm Jarvis, your offline AI assistant. How can I help you today?",
+      "hi": "Hello! I'm Jarvis, your offline AI assistant. How can I help you today?",
+      "time": `Current time is: ${new Date().toLocaleTimeString()}`,
+      "date": `Today's date is: ${new Date().toDateString()}`,
+      "clear": "Clearing terminal...",
+      "who made you": "I was developed by Abhii Patil, a talented software engineer and AI enthusiast.",
+      "about": "Jarvis Terminal v2.0 is an offline AI assistant designed for fast, secure responses without internet connectivity. Built with advanced natural language processing capabilities.",
+      "capabilities": "I can answer questions, perform calculations, provide definitions, explain concepts, assist with learning, and more. Type 'help' for a list of commands.",
+      "what is ai": "Artificial Intelligence (AI) refers to the simulation of human intelligence in machines that are programmed to think like humans and mimic their actions.",
+      "who is shivaji": "Chhatrapati Shivaji Maharaj was the founder of the Maratha Empire, a brilliant warrior and strategist who established an indigenous rule in 17th-century India.",
+      "capital of india": "New Delhi is the capital of India.",
+      "prime minister": "As of 2025, the Prime Minister of India is Narendra Modi.",
+      "what is jee": "JEE (Joint Entrance Examination) is an engineering entrance assessment for admission to various engineering colleges in India, notably the IITs and NITs.",
+      "instagram": "Follow the creator on Instagram: @paatillll_002",
+      "how are you": "I'm functioning at optimal parameters. How can I assist you today?",
+      "tell me about india": "India is a diverse country in South Asia with a rich history spanning over 5,000 years. It's the world's largest democracy and second most populous country, known for its cultural heritage, festivals, and technological advancements.",
+      "what is the largest planet": "The largest planet in our solar system is Jupiter, with a diameter of approximately 142,984 km.",
+      "who are you": "I am Jarvis, an offline AI assistant created by Abhii Patil to provide information and assistance without requiring an internet connection.",
+      "system status": "All systems operational. Memory usage: 12.7MB. Knowledge base: 1,200+ entries. Response time: <0.1s",
+      "thank you": "You're welcome! Is there anything else I can assist with?",
+      "goodbye": "Goodbye! Feel free to return anytime you need assistance."
+    };
+    
+    // Enhanced responses with typing effect
+    function showHelp() {
+      document.getElementById('userInput').value = 'help';
+      handleInput();
+    }
+    
+    function handleInput() {
+      const input = document.getElementById("userInput");
+      const userText = input.value.trim().toLowerCase();
+      if (!userText) return;
+      
+      const terminal = document.getElementById("terminal");
+      const terminalContent = terminal.querySelector('.terminal-content');
+      
+      // Add user input to terminal
+      const userLine = document.createElement("div");
+      userLine.className = "line user";
+      userLine.textContent = `[USER]: ${userText}`;
+      terminalContent.appendChild(userLine);
+      
+      input.value = "";
+      
+      // Show typing indicator
+      const typingIndicator = document.getElementById("typingIndicator");
+      typingIndicator.classList.add("visible");
+      
+      // Scroll to bottom
+      terminal.scrollTop = terminal.scrollHeight;
+      
+      // Simulate processing time
+      setTimeout(() => {
+        typingIndicator.classList.remove("visible");
+        
+        let response = "[JARVIS]: I'm not sure about that. Try asking something else or type 'help' for commands.";
+        let exactMatch = false;
+        
+        // Check for exact matches first
+        if (kb[userText]) {
+          response = `[JARVIS]: ${kb[userText]}`;
+          exactMatch = true;
+        } else {
+          // Check for partial matches
+          for (let key in kb) {
+            if (userText.includes(key)) {
+              response = `[JARVIS]: ${kb[key]}`;
+              break;
+            }
+          }
+        }
+        
+        // Special handling for clear command
+        if (userText === 'clear') {
+          terminalContent.innerHTML = '';
+          response = "[JARVIS]: Terminal cleared.";
+        }
+        
+        // Add bot response with typing effect
+        const botLine = document.createElement("div");
+        botLine.className = "line bot";
+        botLine.textContent = response;
+        terminalContent.appendChild(botLine);
+        
+        // Scroll to bottom after adding new content
+        terminal.scrollTop = terminal.scrollHeight;
+      }, 1000 + Math.random() * 1000);
+    }
+    
+    // Initialize
+    document.addEventListener('DOMContentLoaded', () => {
+      createMatrixEffect();
+      updateTime();
+      setInterval(updateTime, 1000);
+      
+      // Focus input field
+      document.getElementById('userInput').focus();
+    });
+  </script>
+</body>
+</html>
