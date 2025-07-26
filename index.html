@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jarvis AI - Offline v2.0</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    body {
+      background: linear-gradient(135deg, #0c0f1d, #1a1f3d);
+      color: #f0f0f0;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    
+    .header {
+      background: rgba(10, 15, 30, 0.8);
+      padding: 15px 20px;
+      display: flex;
+      align-items: center;
+      border-bottom: 1px solid rgba(100, 200, 255, 0.2);
+      backdrop-filter: blur(5px);
+    }
+    
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    
+    .logo-icon {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, #00c6ff, #0072ff);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+    }
+    
+    .logo-text {
+      font-size: 24px;
+      font-weight: 700;
+      background: linear-gradient(90deg, #00c6ff, #0072ff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    
+    .version {
+      margin-left: 10px;
+      font-size: 14px;
+      color: #7e8a9e;
+    }
+    
+    .main-container {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+    }
+    
+    .sidebar {
+      width: 240px;
+      background: rgba(15, 20, 40, 0.7);
+      padding: 20px 0;
+      border-right: 1px solid rgba(100, 200, 255, 0.1);
+      backdrop-filter: blur(5px);
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .capabilities {
+      padding: 0 20px 20px;
+      border-bottom: 1px solid rgba(100, 200, 255, 0.1);
+      margin-bottom: 20px;
+    }
+    
+    .capabilities h3 {
+      color: #7e8a9e;
+      margin-bottom: 15px;
+      font-size: 16px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    
+    .capability-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    
+    .capability {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 12px;
+      border-radius: 6px;
+      transition: all 0.3s ease;
+      cursor: default;
+    }
+    
+    .capability:hover {
+      background: rgba(100, 150, 255, 0.1);
+    }
+    
+    .capability i {
+      color: #00c6ff;
+      width: 20px;
+      text-align: center;
+    }
+    
+    .knowledge-base {
+      flex: 1;
+      padding: 0 20px;
+      overflow-y: auto;
+    }
+    
+    .kb-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 15px;
+    }
+    
+    .kb-title h3 {
+      color: #7e8a9e;
+      font-size: 16px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    
+    .kb-items {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    
+    .kb-item {
+      background: rgba(20, 25, 50, 0.6);
+      border: 1px solid rgba(100, 200, 255, 0.1);
+      border-radius: 8px;
+      padding: 12px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    
+    .kb-item:hover {
+      background: rgba(30, 40, 70, 0.8);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 100, 255, 0.2);
+    }
+    
+    .terminal-container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 20px;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .terminal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+    
+    .status {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+    }
+    
+    .status-indicator {
+      width: 10px;
+      height: 10px;
+      background: #00ff7f;
+      border-radius: 50%;
+      box-shadow: 0 0 10px #00ff7f;
+    }
+    
+    .controls {
+      display: flex;
+      gap: 10px;
+    }
+    
+    .control-btn {
+      background: rgba(30, 40, 70, 0.6);
+      border: none;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      color: #7e8a9e;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+    }
+    
+    .control-btn:hover {
+      background: rgba(100, 150, 255, 0.3);
+      color: #00c6ff;
+    }
+    
+    #terminal {
+      flex: 1;
+      background: rgba(10, 15, 30, 0.5);
+      border-radius: 12px;
+      padding: 20px;
+      overflow-y: auto;
+      border: 1px solid rgba(100, 200, 255, 0.1);
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      backdrop-filter: blur(5px);
+      box-shadow: 0 8px 32px rgba(0, 10, 30, 0.5);
+    }
+    
+    .line {
+      padding: 12px 15px;
+      border-radius: 8px;
+      animation: fadeIn 0.3s ease;
+      line-height: 1.5;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .user {
+      background: rgba(30, 40, 70, 0.6);
+      border-left: 3px solid #0072ff;
+      align-self: flex-end;
+      max-width: 85%;
+    }
+    
+    .bot {
+      background: rgba(20, 30, 60, 0.6);
+      border-left: 3px solid #00c6ff;
+      align-self: flex-start;
+      max-width: 85%;
+    }
+    
+    .input-container {
+      display: flex;
+      margin-top: 20px;
+      gap: 12px;
+    }
+    
+    #userInput {
+      flex: 1;
+      padding: 15px 20px;
+      background: rgba(20, 25, 50, 0.7);
+      border: 1px solid rgba(100, 200, 255, 0.2);
+      border-radius: 8px;
+      color: #f0f0f0;
+      font-size: 16px;
+      outline: none;
+      transition: all 0.3s ease;
+    }
+    
+    #userInput:focus {
+      border-color: #00c6ff;
+      box-shadow: 0 0 0 2px rgba(0, 198, 255, 0.2);
+    }
+    
+    #userInput::placeholder {
+      color: #7e8a9e;
+    }
+    
+    #sendBtn {
+      background: linear-gradient(135deg, #00c6ff, #0072ff);
+      border: none;
+      width: 55px;
+      border-radius: 8px;
+      color: white;
+      font-size: 18px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    #sendBtn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px rgba(0, 114, 255, 0.4);
+    }
+    
+    .footer {
+      padding: 15px 20px;
+      background: rgba(10, 15, 30, 0.8);
+      border-top: 1px solid rgba(100, 200, 255, 0.1);
+      display: flex;
+      justify-content: space-between;
+      font-size: 14px;
+      color: #7e8a9e;
+      backdrop-filter: blur(5px);
+    }
+    
+    .creator {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .creator a {
+      color: #00c6ff;
+      text-decoration: none;
+      transition: all 0.3s ease;
+    }
+    
+    .creator a:hover {
+      text-decoration: underline;
+    }
+    
+    /* Typing animation */
+    .typing-indicator {
+      display: inline-block;
+      padding: 0 5px;
+    }
+    
+    .typing-dot {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      background: #00c6ff;
+      border-radius: 50%;
+      margin: 0 2px;
+      opacity: 0.6;
+      animation: typing-dot 1.4s infinite ease-in-out;
+    }
+    
+    .typing-dot:nth-child(1) { animation-delay: 0s; }
+    .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+    .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+    
+    @keyframes typing-dot {
+      0%, 60%, 100% { transform: translateY(0); opacity: 0.6; }
+      30% { transform: translateY(-5px); opacity: 1; }
+    }
+    
+    /* Responsive design */
+    @media (max-width: 768px) {
+      .main-container {
+        flex-direction: column;
+      }
+      
+      .sidebar {
+        width: 100%;
+        height: auto;
+        padding: 15px;
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 15px;
+      }
+      
+      .capabilities, .knowledge-base {
+        flex: 1;
+        min-width: 200px;
+        padding: 0;
+        border: none;
+        margin: 0;
+      }
+      
+      .kb-items {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="logo">
+      <div class="logo-icon">
+        <i class="fas fa-robot"></i>
+      </div>
+      <div class="logo-text">Jarvis AI</div>
+      <div class="version">Offline v2.0</div>
+    </div>
+  </div>
+  
+  <div class="main-container">
+    <div class="sidebar">
+      <div class="capabilities">
+        <h3>Capabilities</h3>
+        <div class="capability-list">
+          <div class="capability">
+            <i class="fas fa-brain"></i>
+            <span>Knowledge Base</span>
+          </div>
+          <div class="capability">
+            <i class="fas fa-calculator"></i>
+            <span>Advanced Calculations</span>
+          </div>
+          <div class="capability">
+            <i class="fas fa-history"></i>
+            <span>Command History</span>
+          </div>
+          <div class="capability">
+            <i class="fas fa-book"></i>
+            <span>Information Lookup</span>
+          </div>
+          <div class="capability">
+            <i class="fas fa-terminal"></i>
+            <span>Terminal Interface</span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="knowledge-base">
+        <div class="kb-title">
+          <h3>Knowledge Base</h3>
+          <span><i class="fas fa-database"></i></span>
+        </div>
+        <div class="kb-items">
+          <div class="kb-item">India & Geography</div>
+          <div class="kb-item">Science & Tech</div>
+          <div class="kb-item">Mathematics</div>
+          <div class="kb-item">History</div>
+          <div class="kb-item">Programming</div>
+          <div class="kb-item">Current Events</div>
+          <div class="kb-item">Physics</div>
+          <div class="kb-item">Chemistry</div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="terminal-container">
+      <div class="terminal-header">
+        <div class="status">
+          <div class="status-indicator"></div>
+          <span>Online & Ready</span>
+        </div>
+        <div class="controls">
+          <button class="control-btn" title="Clear Terminal" onclick="clearTerminal()">
+            <i class="fas fa-trash"></i>
+          </button>
+          <button class="control-btn" title="Help">
+            <i class="fas fa-question-circle"></i>
+          </button>
+          <button class="control-btn" title="Settings">
+            <i class="fas fa-cog"></i>
+          </button>
+        </div>
+      </div>
+      
+      <div id="terminal">
+        <div class="line bot">
+          <strong>[Jarvis]:</strong> Hello! I'm Jarvis AI v2.0 by Abhii Patil. How can I assist you today?
+        </div>
+        <div class="line bot">
+          <strong>[Jarvis]:</strong> I can answer questions, perform calculations, and provide information on various topics. Try asking about history, science, or type "help" for commands.
+        </div>
+      </div>
+      
+      <div class="input-container">
+        <input type="text" id="userInput" placeholder="Type your question or command here..." autofocus>
+        <button id="sendBtn" onclick="handleInput()">
+          <i class="fas fa-paper-plane"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+  
+  <div class="footer">
+    <div class="creator">
+      <i class="fas fa-code"></i>
+      <span>Created by <a href="#" target="_blank">Abhii Patil</a></span>
+    </div>
+    <div class="social">
+      <span>Follow on Instagram: <a href="#" target="_blank">@paatillll_002</a></span>
+    </div>
+  </div>
+
+  <script>
+    const kb = {
+      "shivaji": "Chhatrapati Shivaji Maharaj (1630-1680) was the founder of the Maratha Empire in western India. He established a competent and progressive civil rule with the help of disciplined military and well-structured administrative organizations.",
+      "jee": "JEE (Joint Entrance Examination) is an engineering entrance assessment conducted for admission to various engineering colleges in India. It consists of two exams: JEE Main and JEE Advanced.",
+      "india": "India is a country in South Asia, the seventh-largest by area and second-most populous. Known for its diverse culture, languages, and religions, it's the world's largest democracy.",
+      "president of india": "The current President of India is Droupadi Murmu (as of 2025). She is the 15th President and the first tribal woman to hold the office.",
+      "instagram": "You can follow me on Instagram: @paatillll_002",
+      "who are you": "I am Jarvis, an AI assistant created by Abhii Patil. I'm designed to help with information retrieval, calculations, and answering questions.",
+      "capital of france": "The capital of France is Paris, known as the 'City of Light' and famous for its art, fashion, and cuisine.",
+      "world war": "World War I (1914-1918) and World War II (1939-1945) were the largest military conflicts in history. WWI involved the Allies vs Central Powers, while WWII involved the Allies vs Axis powers.",
+      "help": "Available commands: \n- 'calculate [expression]' for math operations \n- 'clear' to clear terminal \n- 'history' to view command history \n- 'topics' to list knowledge areas \nOr ask about: India, Science, History, Geography, etc.",
+      "topics": "I have knowledge about: India, JEE, Presidents, Geography, History, Science, Mathematics, Technology, Physics, Chemistry, and more.",
+      "physics": "Physics is the natural science that studies matter, motion, energy, and force. Major areas include mechanics, thermodynamics, electromagnetism, and quantum physics.",
+      "chemistry": "Chemistry is the study of substances, their properties, structure, and the changes they undergo. Branches include organic, inorganic, physical, and analytical chemistry.",
+      "math": "Mathematics includes algebra, calculus, geometry, and statistics. I can solve equations, calculate derivatives, integrals, and more.",
+      "programming": "I can help with programming concepts in languages like JavaScript, Python, Java, C++, and others. Ask about algorithms, data structures, or specific syntax.",
+      "abhii patil": "Abhii Patil is the creator of this AI assistant. He's passionate about technology, AI development, and creating helpful tools for education."
+    };
+
+    const commandHistory = [];
+    let historyIndex = -1;
+
+    function handleInput() {
+      const input = document.getElementById("userInput");
+      const userText = input.value.trim();
+      if (!userText) return;
+
+      // Add to command history
+      commandHistory.push(userText);
+      historyIndex = commandHistory.length;
+
+      const terminal = document.getElementById("terminal");
+      
+      // Display user input
+      const userLine = document.createElement("div");
+      userLine.className = "line user";
+      userLine.innerHTML = `<strong>[You]:</strong> ${userText}`;
+      terminal.appendChild(userLine);
+      
+      // Clear input
+      input.value = "";
+      
+      // Scroll to bottom
+      terminal.scrollTop = terminal.scrollHeight;
+      
+      // Show typing indicator
+      const typingLine = document.createElement("div");
+      typingLine.className = "line bot";
+      typingLine.id = "typingIndicator";
+      typingLine.innerHTML = `<strong>[Jarvis]:</strong> <span class="typing-indicator"><span class="typing-dot"></span><span class="typing-dot"></span><span class="typing-dot"></span></span>`;
+      terminal.appendChild(typingLine);
+      terminal.scrollTop = terminal.scrollHeight;
+      
+      // Process after a short delay to simulate thinking
+      setTimeout(() => {
+        document.getElementById("typingIndicator").remove();
+        processCommand(userText.toLowerCase());
+      }, 1000);
+    }
+    
+    function processCommand(userText) {
+      const terminal = document.getElementById("terminal");
+      let response = "";
+      
+      // Check for commands
+      if (userText === "clear") {
+        clearTerminal();
+        return;
+      }
+      
+      if (userText === "history") {
+        if (commandHistory.length === 0) {
+          response = "No command history yet.";
+        } else {
+          response = "Command History:\n" + commandHistory.map((cmd, i) => `${i+1}. ${cmd}`).join("\n");
+        }
+      } 
+      // Check for calculations
+      else if (userText.startsWith("calculate") || userText.startsWith("calc") || 
+               /[\d+\-*/^()]/.test(userText)) {
+        try {
+          // Extract expression
+          let expr = userText.replace(/calculate|calc/gi, "").trim();
+          if (!expr) {
+            response = "Please provide a mathematical expression to calculate.";
+          } else {
+            // Replace common math terms
+            expr = expr
+              .replace(/pi/g, Math.PI)
+              .replace(/e/g, Math.E)
+              .replace(/sqrt/g, "Math.sqrt")
+              .replace(/sin/g, "Math.sin")
+              .replace(/cos/g, "Math.cos")
+              .replace(/tan/g, "Math.tan")
+              .replace(/log/g, "Math.log10")
+              .replace(/\^/g, "**")
+              .replace(/[^-()\d/*+.e^a-zA-Z]/g, "");
+            
+            const result = eval(expr);
+            if (!isNaN(result)) {
+              response = `Calculation: ${expr} = ${result.toFixed(5)}`;
+            } else {
+              response = "Sorry, I couldn't calculate that. Please check your expression.";
+            }
+          }
+        } catch (e) {
+          response = "Sorry, I couldn't calculate that. Please check your expression.";
+        }
+      } 
+      // Check knowledge base
+      else {
+        let found = false;
+        for (let key in kb) {
+          if (userText.includes(key)) {
+            response = kb[key];
+            found = true;
+            break;
+          }
+        }
+        
+        if (!found) {
+          response = "I'm still learning. Could you rephrase or ask about something else? I know about India, history, science, and mathematics.";
+        }
+      }
+      
+      // Display response
+      const botLine = document.createElement("div");
+      botLine.className = "line bot";
+      botLine.innerHTML = `<strong>[Jarvis]:</strong> ${response}`;
+      terminal.appendChild(botLine);
+      
+      // Scroll to bottom
+      terminal.scrollTop = terminal.scrollHeight;
+    }
+    
+    function clearTerminal() {
+      const terminal = document.getElementById("terminal");
+      terminal.innerHTML = `
+        <div class="line bot">
+          <strong>[Jarvis]:</strong> Terminal cleared. Ready for new commands.
+        </div>
+      `;
+    }
+    
+    // Handle Enter key
+    document.getElementById("userInput").addEventListener("keydown", function(e) {
+      if (e.key === "Enter") {
+        handleInput();
+      }
+      
+      // Command history with up/down arrows
+      if (e.key === "ArrowUp" && commandHistory.length > 0) {
+        e.preventDefault();
+        if (historyIndex > 0) historyIndex--;
+        this.value = commandHistory[historyIndex] || "";
+      }
+      
+      if (e.key === "ArrowDown") {
+        e.preventDefault();
+        if (historyIndex < commandHistory.length - 1) {
+          historyIndex++;
+          this.value = commandHistory[historyIndex] || "";
+        } else {
+          historyIndex = commandHistory.length;
+          this.value = "";
+        }
+      }
+    });
+    
+    // Initial sample knowledge display
+    setTimeout(() => {
+      const terminal = document.getElementById("terminal");
+      const sampleLine = document.createElement("div");
+      sampleLine.className = "line bot";
+      sampleLine.innerHTML = `<strong>[Jarvis]:</strong> Try asking: "Who is Shivaji?", "What is JEE?", or "Calculate 45 * sin(30)"`;
+      terminal.appendChild(sampleLine);
+      terminal.scrollTop = terminal.scrollHeight;
+    }, 2000);
+  </script>
+</body>
+</html>
